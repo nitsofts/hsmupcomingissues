@@ -6,7 +6,7 @@ import json
 
 app = Flask(__name__)
 
-@app.route('/api/get_upcoming_ipo', methods=['GET'])
+@app.route('/get_upcoming_ipo', methods=['GET'])
 def get_upcoming_ipo():
     # Set up Chrome options
     chrome_options = Options()
