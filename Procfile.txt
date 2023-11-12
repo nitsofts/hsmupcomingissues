@@ -1,1 +1,1 @@
-web: gunicorn hsmupcomingissues:app
+web: gunicorn -b :$PORT hsmupcomingissues:app
