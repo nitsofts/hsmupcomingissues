@@ -1,34 +1,16 @@
 from flask import Flask, jsonify
-from selenium import webdriver
-from selenium.webdriver.chrome.options import Options
 from bs4 import BeautifulSoup
+import requests
 import json
 
 app = Flask(__name__)
 
 @app.route('/get_upcoming_ipo', methods=['GET'])
 def get_upcoming_ipo():
-    # Set up Chrome options
-    chrome_options = Options()
-    chrome_options.add_argument('--headless')  # Run Chrome in headless mode
-
-    # Create a Chrome webdriver
-    driver = webdriver.Chrome(options=chrome_options)
-
-    # Open the URL in the headless browser
-    driver.get('https://www.sharesansar.com/existing-issues#ipo')
-
-    # Wait for the page to load (adjust the time as needed)
-    driver.implicitly_wait(5)  # Wait for 5 seconds (you can adjust this time)
-
-    # Get the HTML content after the dynamic content is loaded
-    html_code = driver.page_source
-
-    # Close the browser
-    driver.quit()
-
-    # Parse the HTML content
-    soup = BeautifulSoup(html_code, 'html.parser')
+    # Replace the headless browser code with direct HTTP request
+    url = 'https://www.sharesansar.com/existing-issues#ipo'
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, 'html.parser')
 
     # Extract table data and convert it to a list of dictionaries
     data_list = []
@@ -56,4 +38,4 @@ def get_upcoming_ipo():
     return jsonify(data_list)
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(debug=True)
