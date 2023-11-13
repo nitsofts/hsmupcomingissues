@@ -14,7 +14,7 @@ from pyBSDate import convert_AD_to_BS
 
 app = Flask(__name__)
 
-@app.route('/')
+@app.route('/get_upcoming_ipo')
 def get_upcoming_ipo():
     url = "https://www.sharesansar.com/existing-issues"
     headers = {
