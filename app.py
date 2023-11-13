@@ -1,41 +1,95 @@
+'''
+Script to make request on Ready to Use API of SHARE SANSAR with proper headers and payload.
+Modifying Timestamp to get current Time in Milliseconds.
+Giving output on custom json format.
+'''
+
+# FLASK APP
 from flask import Flask, jsonify
-from bs4 import BeautifulSoup
 import requests
 import json
+import time
+from datetime import datetime
+from pyBSDate import convert_AD_to_BS
 
 app = Flask(__name__)
 
-@app.route('/get_upcoming_ipo', methods=['GET'])
+@app.route('/')
 def get_upcoming_ipo():
-    # Replace the headless browser code with direct HTTP request
-    url = 'https://www.sharesansar.com/existing-issues#ipo'
-    response = requests.get(url)
-    soup = BeautifulSoup(response.text, 'html.parser')
+    url = "https://www.sharesansar.com/existing-issues"
+    headers = {
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+        "Accept": "application/json, text/javascript, */*; q=0.01",
+        "Referer": "https://www.sharesansar.com/existing-issues",
+        "X-Requested-With": "XMLHttpRequest",
+    }
 
-    # Extract table data and convert it to a list of dictionaries
-    data_list = []
-    table = soup.find('table', {'id': 'myTableEip'})
-    if table:
-        for row in table.tbody.find_all('tr'):
-            columns = row.find_all(['td', 'th'])
-            data_list.append({
-                "companyName": columns[2].text.strip(),
-                "companySymbol": columns[1].text.strip(),
-                "units": columns[3].text.strip(),
-                "price": columns[4].text.strip(),
-                "openingDate": columns[5].text.strip(),
-                "closingDate": columns[6].text.strip(),
-                "extendedClosingDate": columns[7].text.strip(),
-                "listingDate": columns[8].text.strip(),
-                "issueManager": columns[9].text.strip(),
-                "status": columns[10].text.strip()
-            })
+    # Get the current timestamp in milliseconds
+    current_timestamp = int(time.time() * 1000)
 
-    # Convert the list of dictionaries to JSON format
-    json_data = json.dumps(data_list, indent=2)
+    def convert_to_bs(date_str):
+        # Convert AD date to BS using pyBSDate
+        ad_date = datetime.strptime(date_str, "%Y-%m-%d")
+        try:
+            bs_date_tuple = convert_AD_to_BS(ad_date.year, ad_date.month, ad_date.day)
+            bs_date = datetime(*bs_date_tuple)  # Convert the tuple to datetime
+            return bs_date
+        except ValueError:
+            return None
 
-    # Return the JSON data as the API response
-    return jsonify(data_list)
+    payload = {
+        "draw": 1,
+        "columns[0][data]": "DT_Row_Index",
+        "columns[0][name]": "",
+        "columns[0][searchable]": "false",
+        "columns[0][orderable]": "false",
+        "columns[0][search][value]": "",
+        "columns[0][search][regex]": "false",
+        "start": 0,
+        "length": 20,
+        "search[value]": "",
+        "search[regex]": "false",
+        "type": 1,
+        "_": current_timestamp,  # Use the current timestamp
+    }
+
+    response = requests.get(url, headers=headers, params=payload)
+
+    if response.status_code == 200:
+        data = response.json()["data"]
+        formatted_data = []
+
+        for entry in data:
+            # Convert AD dates to BS dates
+            opening_date_ad = entry["opening_date"] if entry["opening_date"] else None
+            closing_date_ad = entry["closing_date"] if entry["closing_date"] else None
+            extended_closing_date_ad = entry["final_date"] if entry["final_date"] else None
+
+            opening_date_bs = convert_to_bs(opening_date_ad) if opening_date_ad else None
+            closing_date_bs = convert_to_bs(closing_date_ad) if closing_date_ad else None
+            extended_closing_date_bs = convert_to_bs(extended_closing_date_ad) if extended_closing_date_ad else None
+
+            formatted_entry = {
+                "companyName": entry["company"]["companyname"].split('>')[1].split('<')[0],
+                "companySymbol": entry["company"]["symbol"].split('>')[1].split('<')[0],
+                "units": entry["total_units"],
+                "price": entry["issue_price"],
+                "openingDateAd": opening_date_ad if opening_date_ad else "In Progress",
+                "closingDateAd": closing_date_ad if closing_date_ad else "In Progress",
+                "extendedClosingDateAd": extended_closing_date_ad if extended_closing_date_ad else "In Progress",
+                "openingDateBs": opening_date_bs.strftime("%Y-%m-%d") if opening_date_bs else "In Progress",
+                "closingDateBs": closing_date_bs.strftime("%Y-%m-%d") if closing_date_bs else "In Progress",
+                "extendedClosingDateBs": extended_closing_date_bs.strftime("%Y-%m-%d") if extended_closing_date_bs else "In Progress",
+                "listingDate": entry["listing_date"] if entry["listing_date"] else "",
+                "issueManager": entry["issue_manager"],
+                "status": "Closed" if entry["status"] == 1 else "In Progress",
+            }
+            formatted_data.append(formatted_entry)
+
+        # Return JSON response
+        return jsonify(formatted_data)
+    else:
+        return f"Error: {response.status_code}"
 
 if __name__ == '__main__':
     app.run(debug=True)
