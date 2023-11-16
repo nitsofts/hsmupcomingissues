@@ -87,7 +87,7 @@ def get_upcoming_ipo():
             formatted_data.append(formatted_entry)
 
         # Return JSON response
-        return jsonify(formatted_data), 200, {'Content-Type': 'application/json;charset=UTF-8'}
+        return json.dumps(formatted_data, indent=2)
     else:
         return f"Error: {response.status_code}"
 
