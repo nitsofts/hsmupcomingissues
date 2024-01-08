@@ -17,15 +17,16 @@ def convert_to_bs(date_str):
     except ValueError:
         return None
 
-@app.route('/get_upcoming_ipo')
-def get_upcoming_ipo():
-    url = "https://www.sharesansar.com/existing-issues"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Referer": "https://www.sharesansar.com/existing-issues",
-        "X-Requested-With": "XMLHttpRequest",
-    }
+# Shared URL and headers
+url = "https://www.sharesansar.com/existing-issues"
+headers = {
+    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
+    "Accept": "application/json, text/javascript, */*; q=0.01",
+    "Referer": "https://www.sharesansar.com/existing-issues",
+    "X-Requested-With": "XMLHttpRequest",
+}
+
+def fetch_data(type_value):
     current_timestamp = int(time.time() * 1000)
     payload = {
         "draw": 1,
@@ -39,7 +40,7 @@ def get_upcoming_ipo():
         "length": 20,
         "search[value]": "",
         "search[regex]": "false",
-        "type": 3,
+        "type": type_value,
         "_": current_timestamp,
     }
     response = requests.get(url, headers=headers, params=payload)
@@ -75,65 +76,21 @@ def get_upcoming_ipo():
     else:
         return f"Error: {response.status_code}"
 
+@app.route('/get_upcoming_ipo')
+def get_upcoming_ipo():
+    try:
+        formatted_data = fetch_data(1)  # type 1 for IPO
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
 @app.route('/get_upcoming_right')
 def get_upcoming_right():
-    url = "https://www.sharesansar.com/existing-issues"
-    headers = {
-        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
-        "Accept": "application/json, text/javascript, */*; q=0.01",
-        "Referer": "https://www.sharesansar.com/existing-issues",
-        "X-Requested-With": "XMLHttpRequest",
-    }
-    current_timestamp = int(time.time() * 1000)
-    payload = {
-        
-        "draw": 1,
-        "columns[0][data]": "DT_Row_Index",
-        "columns[0][name]": "",
-        "columns[0][searchable]": "false",
-        "columns[0][orderable]": "false",
-        "columns[0][search][value]": "",
-        "columns[0][search][regex]": "false",
-        "columns[1][data]": "company.symbol",
-        "columns[1][searchable]": "true",
-        "length": 20,
-        "search[value]": "",
-        "search[regex]": "false",
-        "type": 1,
-        "_": current_timestamp
-    }
-    response = requests.get(url, headers=headers, params=payload)
-    if response.status_code == 200:
-        data = response.json()["data"]
-        formatted_data = []
-        for entry in data:
-            opening_date_ad = entry["opening_date"] if entry["opening_date"] else None
-            closing_date_ad = entry["closing_date"] if entry["closing_date"] else None
-            extended_closing_date_ad = entry["final_date"] if entry["final_date"] else None
-
-            opening_date_bs = convert_to_bs(opening_date_ad) if opening_date_ad else None
-            closing_date_bs = convert_to_bs(closing_date_ad) if closing_date_ad else None
-            extended_closing_date_bs = convert_to_bs(extended_closing_date_ad) if extended_closing_date_ad else None
-
-            formatted_entry = {
-                "companyName": entry["company"]["companyname"].split('>')[1].split('<')[0],
-                "companySymbol": entry["company"]["symbol"].split('>')[1].split('<')[0],
-                "units": entry["total_units"],
-                "price": entry["issue_price"],
-                "openingDateAd": opening_date_ad if opening_date_ad else "In Progress",
-                "closingDateAd": closing_date_ad if closing_date_ad else "In Progress",
-                "extendedClosingDateAd": extended_closing_date_ad if extended_closing_date_ad else "In Progress",
-                "openingDateBs": opening_date_bs.strftime("%Y-%m-%d") if opening_date_bs else "In Progress",
-                "closingDateBs": closing_date_bs.strftime("%Y-%m-%d") if closing_date_bs else "In Progress",
-                "extendedClosingDateBs": extended_closing_date_bs.strftime("%Y-%m-%d") if extended_closing_date_bs else "In Progress",
-                "listingDate": entry["listing_date"] if entry["listing_date"] else "",
-                "issueManager": entry["issue_manager"],
-                "status": "Closed" if entry["status"] == 1 else "In Progress",
-            }
-            formatted_data.append(formatted_entry)
+    try:
+        formatted_data = fetch_data(3)  # type 3 for Right
         return json.dumps(formatted_data, indent=2)
-    else:
-        return f"Error: {response.status_code}"
+    except Exception as e:
+        return str(e)
 
 if __name__ == '__main__':
     app.run(debug=True)
