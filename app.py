@@ -19,7 +19,7 @@ def convert_to_bs(date_str):
 
 @app.route('/get_upcoming_ipo')
 def get_upcoming_ipo():
-    url = "https://www.sharesansar.com/existing-issues#ipo"
+    url = "https://www.sharesansar.com/existing-issues"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
         "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -39,7 +39,7 @@ def get_upcoming_ipo():
         "length": 20,
         "search[value]": "",
         "search[regex]": "false",
-        "type": 1,
+        "type": 3,
         "_": current_timestamp,
     }
     response = requests.get(url, headers=headers, params=payload)
@@ -77,7 +77,7 @@ def get_upcoming_ipo():
 
 @app.route('/get_upcoming_right')
 def get_upcoming_right():
-    url = "https://www.sharesansar.com/existing-issues#rightshare"
+    url = "https://www.sharesansar.com/existing-issues"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
         "Accept": "application/json, text/javascript, */*; q=0.01",
@@ -86,6 +86,7 @@ def get_upcoming_right():
     }
     current_timestamp = int(time.time() * 1000)
     payload = {
+        
         "draw": 1,
         "columns[0][data]": "DT_Row_Index",
         "columns[0][name]": "",
@@ -98,7 +99,7 @@ def get_upcoming_right():
         "length": 20,
         "search[value]": "",
         "search[regex]": "false",
-        "type": 3,
+        "type": 1,
         "_": current_timestamp
     }
     response = requests.get(url, headers=headers, params=payload)
