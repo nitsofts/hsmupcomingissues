@@ -26,7 +26,7 @@ headers = {
     "X-Requested-With": "XMLHttpRequest",
 }
 
-def fetch_data(type_value):
+def fetch_data(type_value, limit=20):  # Default limit is set to 20
     current_timestamp = int(time.time() * 1000)
     payload = {
         "draw": 1,
@@ -37,7 +37,7 @@ def fetch_data(type_value):
         "columns[0][search][value]": "",
         "columns[0][search][regex]": "false",
         "start": 0,
-        "length": 20,
+        "length": limit,  # Use the limit parameter
         "search[value]": "",
         "search[regex]": "false",
         "type": type_value,
@@ -121,6 +121,19 @@ def get_upcoming_migrant():
     try:
         formatted_data = fetch_data(8)  # type 8 for migrant
         return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_all')
+def get_upcoming_all():
+    try:
+        all_data = []
+        for type_value, issue_type in [(1, 'ipo'), (3, 'right'), (2, 'fpo'), (5, 'local'), (7, 'debenture'), (8, 'migrant')]:
+            data = fetch_data(type_value, limit=10)
+            for item in data:
+                item['issueType'] = issue_type
+            all_data.extend(data)
+        return json.dumps(all_data, indent=2)
     except Exception as e:
         return str(e)
 
