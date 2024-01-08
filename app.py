@@ -127,9 +127,12 @@ def get_upcoming_migrant():
 @app.route('/get_upcoming_all')
 def get_upcoming_all():
     try:
+        # Retrieve 'limit' parameter from the request URL, default to 10 if not provided
+        limit = request.args.get('limit', default=10, type=int)
+
         all_data = []
         for type_value, issue_type in [(1, 'ipo'), (3, 'right'), (2, 'fpo'), (5, 'local'), (7, 'debenture'), (8, 'migrant')]:
-            data = fetch_data(type_value, limit=10)
+            data = fetch_data(type_value, limit=limit)
             for item in data:
                 item['issueType'] = issue_type
             all_data.extend(data)
