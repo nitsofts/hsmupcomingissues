@@ -93,7 +93,7 @@ def get_upcoming_right():
         return str(e)
 
 @app.route('/get_upcoming_fpo')
-def get_upcoming_right():
+def get_upcoming_fpo():
     try:
         formatted_data = fetch_data(2)  # type 2 for fpo
         return json.dumps(formatted_data, indent=2)
@@ -101,7 +101,7 @@ def get_upcoming_right():
         return str(e)
 
 @app.route('/get_upcoming_local')
-def get_upcoming_right():
+def get_upcoming_local():
     try:
         formatted_data = fetch_data(5)  # type 5 for local
         return json.dumps(formatted_data, indent=2)
@@ -109,7 +109,7 @@ def get_upcoming_right():
         return str(e)
 
 @app.route('/get_upcoming_debenture')
-def get_upcoming_right():
+def get_upcoming_debenture():
     try:
         formatted_data = fetch_data(7)  # type 7 for debenture
         return json.dumps(formatted_data, indent=2)
@@ -117,7 +117,7 @@ def get_upcoming_right():
         return str(e)
 
 @app.route('/get_upcoming_migrant')
-def get_upcoming_right():
+def get_upcoming_migrant():
     try:
         formatted_data = fetch_data(8)  # type 8 for migrant
         return json.dumps(formatted_data, indent=2)
