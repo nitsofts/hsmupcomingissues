@@ -79,7 +79,8 @@ def fetch_data(type_value, limit=20):  # Default limit is set to 20
 @app.route('/get_upcoming_ipo')
 def get_upcoming_ipo():
     try:
-        formatted_data = fetch_data(1)  # type 1 for IPO
+        limit = request.args.get('limit', default=20, type=int)  # Retrieve limit parameter
+        formatted_data = fetch_data(1, limit=limit)  # type 1 for IPO
         return json.dumps(formatted_data, indent=2)
     except Exception as e:
         return str(e)
@@ -87,7 +88,8 @@ def get_upcoming_ipo():
 @app.route('/get_upcoming_right')
 def get_upcoming_right():
     try:
-        formatted_data = fetch_data(3)  # type 3 for Right
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(3, limit=limit)  # type 3 for Right
         return json.dumps(formatted_data, indent=2)
     except Exception as e:
         return str(e)
@@ -95,7 +97,8 @@ def get_upcoming_right():
 @app.route('/get_upcoming_fpo')
 def get_upcoming_fpo():
     try:
-        formatted_data = fetch_data(2)  # type 2 for fpo
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(2, limit=limit)  # type 2 for fpo
         return json.dumps(formatted_data, indent=2)
     except Exception as e:
         return str(e)
@@ -103,7 +106,8 @@ def get_upcoming_fpo():
 @app.route('/get_upcoming_local')
 def get_upcoming_local():
     try:
-        formatted_data = fetch_data(5)  # type 5 for local
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(5, limit=limit)  # type 5 for local
         return json.dumps(formatted_data, indent=2)
     except Exception as e:
         return str(e)
@@ -111,7 +115,8 @@ def get_upcoming_local():
 @app.route('/get_upcoming_debenture')
 def get_upcoming_debenture():
     try:
-        formatted_data = fetch_data(7)  # type 7 for debenture
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(7, limit=limit)  # type 7 for debenture
         return json.dumps(formatted_data, indent=2)
     except Exception as e:
         return str(e)
@@ -119,7 +124,8 @@ def get_upcoming_debenture():
 @app.route('/get_upcoming_migrant')
 def get_upcoming_migrant():
     try:
-        formatted_data = fetch_data(8)  # type 8 for migrant
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(8, limit=limit)  # type 8 for migrant
         return json.dumps(formatted_data, indent=2)
     except Exception as e:
         return str(e)
