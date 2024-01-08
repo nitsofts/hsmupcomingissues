@@ -72,7 +72,7 @@ def fetch_data(type_value):
                 "status": "Closed" if entry["status"] == 1 else "In Progress",
             }
             formatted_data.append(formatted_entry)
-        return json.dumps(formatted_data, indent=2)
+        return jsonify(formatted_data)
     else:
         return f"Error: {response.status_code}"
 
@@ -80,7 +80,7 @@ def fetch_data(type_value):
 def get_upcoming_ipo():
     try:
         formatted_data = fetch_data(1)  # type 1 for IPO
-        return json.dumps(formatted_data, indent=2)
+        return jsonify(formatted_data)
     except Exception as e:
         return str(e)
 
@@ -88,7 +88,7 @@ def get_upcoming_ipo():
 def get_upcoming_right():
     try:
         formatted_data = fetch_data(3)  # type 3 for Right
-        return json.dumps(formatted_data, indent=2)
+        return jsonify(formatted_data)
     except Exception as e:
         return str(e)
 
