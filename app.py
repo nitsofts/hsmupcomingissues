@@ -77,7 +77,7 @@ def get_upcoming_ipo():
 
 @app.route('/get_upcoming_right')
 def get_upcoming_right():
-    url = "https://www.sharesansar.com/existing-issues"
+    url = "https://www.sharesansar.com/existing-issues#rightshares"
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/115.0.0.0 Safari/537.36",
         "Accept": "application/json, text/javascript, */*; q=0.01",
