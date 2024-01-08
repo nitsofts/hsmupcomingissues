@@ -14,6 +14,16 @@ from pyBSDate import convert_AD_to_BS
 
 app = Flask(__name__)
 
+def convert_to_bs(date_str):
+        # Convert AD date to BS using pyBSDate
+        ad_date = datetime.strptime(date_str, "%Y-%m-%d")
+        try:
+            bs_date_tuple = convert_AD_to_BS(ad_date.year, ad_date.month, ad_date.day)
+            bs_date = datetime(*bs_date_tuple)  # Convert the tuple to datetime
+            return bs_date
+        except ValueError:
+            return None
+
 @app.route('/get_upcoming_ipo')
 def get_upcoming_ipo():
     url = "https://www.sharesansar.com/existing-issues"
@@ -26,16 +36,6 @@ def get_upcoming_ipo():
 
     # Get the current timestamp in milliseconds
     current_timestamp = int(time.time() * 1000)
-
-    def convert_to_bs(date_str):
-        # Convert AD date to BS using pyBSDate
-        ad_date = datetime.strptime(date_str, "%Y-%m-%d")
-        try:
-            bs_date_tuple = convert_AD_to_BS(ad_date.year, ad_date.month, ad_date.day)
-            bs_date = datetime(*bs_date_tuple)  # Convert the tuple to datetime
-            return bs_date
-        except ValueError:
-            return None
 
     payload = {
         "draw": 1,
