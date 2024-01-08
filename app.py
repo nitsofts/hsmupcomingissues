@@ -92,5 +92,37 @@ def get_upcoming_right():
     except Exception as e:
         return str(e)
 
+@app.route('/get_upcoming_fpo')
+def get_upcoming_right():
+    try:
+        formatted_data = fetch_data(2)  # type 2 for fpo
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_local')
+def get_upcoming_right():
+    try:
+        formatted_data = fetch_data(5)  # type 5 for local
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_debenture')
+def get_upcoming_right():
+    try:
+        formatted_data = fetch_data(7)  # type 7 for debenture
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_migrant')
+def get_upcoming_right():
+    try:
+        formatted_data = fetch_data(8)  # type 8 for migrant
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
 if __name__ == '__main__':
     app.run(debug=True)
