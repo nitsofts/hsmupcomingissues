@@ -72,28 +72,25 @@ def fetch_data(type_value):
                 "status": "Closed" if entry["status"] == 1 else "In Progress",
             }
             formatted_data.append(formatted_entry)
-        return jsonify(formatted_data)
+        return formatted_data
     else:
-        return f"Error: {response.status_code}"
+        raise Exception(f"Error: {response.status_code}")
 
 @app.route('/get_upcoming_ipo')
 def get_upcoming_ipo():
     try:
         formatted_data = fetch_data(1)  # type 1 for IPO
-        return jsonify(formatted_data)  # Use jsonify to return JSON response
+        return json.dumps(formatted_data, indent=2)
     except Exception as e:
-        return jsonify({"error": str(e)})
+        return str(e)
 
 @app.route('/get_upcoming_right')
 def get_upcoming_right():
     try:
         formatted_data = fetch_data(3)  # type 3 for Right
-        return jsonify(formatted_data)  # Use jsonify to return JSON response
+        return json.dumps(formatted_data, indent=2)
     except Exception as e:
-        return jsonify({"error": str(e)})
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        return str(e)
 
 if __name__ == '__main__':
     app.run(debug=True)
