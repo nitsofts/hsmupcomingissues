@@ -86,7 +86,75 @@ def fetch_data(type_value, limit=20):  # Default limit is set to 20
     else:
         raise Exception(f"Error: {response.status_code}")
 
-# Define your Flask routes here as in your original code...
+@app.route('/get_upcoming_ipo')
+def get_upcoming_ipo():
+    try:
+        limit = request.args.get('limit', default=20, type=int)  # Retrieve limit parameter
+        formatted_data = fetch_data(1, limit=limit)  # type 1 for IPO
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_right')
+def get_upcoming_right():
+    try:
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(3, limit=limit)  # type 3 for Right
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_fpo')
+def get_upcoming_fpo():
+    try:
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(2, limit=limit)  # type 2 for fpo
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_local')
+def get_upcoming_local():
+    try:
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(5, limit=limit)  # type 5 for local
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_debenture')
+def get_upcoming_debenture():
+    try:
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(7, limit=limit)  # type 7 for debenture
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_migrant')
+def get_upcoming_migrant():
+    try:
+        limit = request.args.get('limit', default=20, type=int)
+        formatted_data = fetch_data(8, limit=limit)  # type 8 for migrant
+        return json.dumps(formatted_data, indent=2)
+    except Exception as e:
+        return str(e)
+
+@app.route('/get_upcoming_all')
+def get_upcoming_all():
+    try:
+        # Retrieve 'limit' parameter from the request URL, default to 10 if not provided
+        limit = request.args.get('limit', default=10, type=int)
+
+        all_data = []
+        for type_value, issue_type in [(1, 'ipo'), (3, 'right'), (2, 'fpo'), (5, 'local'), (7, 'debenture'), (8, 'migrant')]:
+            data = fetch_data(type_value, limit=limit)
+            for item in data:
+                item['issueType'] = issue_type
+            all_data.extend(data)
+        return json.dumps(all_data, indent=2)
+    except Exception as e:
+        return str(e)
 
 if __name__ == '__main__':
     app.run(debug=True)
