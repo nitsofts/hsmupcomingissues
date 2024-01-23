@@ -17,6 +17,13 @@ def convert_to_bs(date_str):
     except ValueError:
         return None
 
+def format_number(number):
+    """Format the number to remove unnecessary decimal places."""
+    if number % 1 == 0:  # Check if there is no decimal part
+        return f"{int(number)}"  # Return as integer
+    else:
+        return f"{number}"  # Return with decimal part
+
 # Shared URL and headers
 url = "https://www.sharesansar.com/existing-issues"
 headers = {
@@ -69,8 +76,8 @@ def fetch_data(type_value, limit=20):  # Default limit is set to 20
             formatted_entry = {
                 "companyName": entry["company"]["companyname"].split('>')[1].split('<')[0],
                 "companySymbol": entry["company"]["symbol"].split('>')[1].split('<')[0],
-                "units": entry["total_units"],
-                "price": entry["issue_price"],
+                "units": format_number(float(entry["total_units"])),
+                "price": format_number(float(entry["issue_price"])),
                 "openingDateAd": opening_date_ad if opening_date_ad else "In Progress",
                 "closingDateAd": closing_date_ad if closing_date_ad else "In Progress",
                 "extendedClosingDateAd": extended_closing_date_ad if extended_closing_date_ad else "In Progress",
