@@ -19,10 +19,15 @@ def convert_to_bs(date_str):
 
 def format_number(number):
     """Format the number to remove unnecessary decimal places."""
-    if number % 1 == 0:  # Check if there is no decimal part
-        return f"{int(number)}"  # Return as integer
-    else:
-        return f"{number}"  # Return with decimal part
+    try:
+        if number is not None and number % 1 == 0:  # Check if number is not None and there is no decimal part
+            return f"{int(number)}"  # Return as integer
+        elif number is not None:
+            return f"{number}"  # Return with decimal part
+    except TypeError:
+        pass
+    return "N/A"  # Return 'N/A' or some default value if the input is None or not a number
+
 
 # Shared URL and headers
 url = "https://www.sharesansar.com/existing-issues"
@@ -76,8 +81,8 @@ def fetch_data(type_value, limit=20):  # Default limit is set to 20
             formatted_entry = {
                 "companyName": entry["company"]["companyname"].split('>')[1].split('<')[0],
                 "companySymbol": entry["company"]["symbol"].split('>')[1].split('<')[0],
-                "units": format_number(float(entry["total_units"])),
-                "price": format_number(float(entry["issue_price"])),
+                "units": format_number(float(entry["total_units"]) if entry["total_units"] is not None else None),
+                "price": format_number(float(entry["issue_price"]) if entry["issue_price"] is not None else None),
                 "openingDateAd": opening_date_ad if opening_date_ad else "In Progress",
                 "closingDateAd": closing_date_ad if closing_date_ad else "In Progress",
                 "extendedClosingDateAd": extended_closing_date_ad if extended_closing_date_ad else "In Progress",
