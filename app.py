@@ -56,6 +56,16 @@ def fetch_data(type_value, limit=20):  # Default limit is set to 20
             closing_date_bs = convert_to_bs(closing_date_ad) if closing_date_ad else None
             extended_closing_date_bs = convert_to_bs(extended_closing_date_ad) if extended_closing_date_ad else None
 
+            # Updated logic for setting the status
+            if entry["status"] == 0:
+                status = "Open"
+            elif entry["status"] == 1:
+                status = "Closed"
+            elif entry["status"] == -2:
+                status = "In Progress"
+            else:
+                status = "Unknown"
+
             formatted_entry = {
                 "companyName": entry["company"]["companyname"].split('>')[1].split('<')[0],
                 "companySymbol": entry["company"]["symbol"].split('>')[1].split('<')[0],
@@ -69,82 +79,14 @@ def fetch_data(type_value, limit=20):  # Default limit is set to 20
                 "extendedClosingDateBs": extended_closing_date_bs.strftime("%Y-%m-%d") if extended_closing_date_bs else "In Progress",
                 "listingDate": entry["listing_date"] if entry["listing_date"] else "",
                 "issueManager": entry["issue_manager"],
-                "status": "Closed" if entry["status"] == 1 else "In Progress",
+                "status": status,
             }
             formatted_data.append(formatted_entry)
         return formatted_data
     else:
         raise Exception(f"Error: {response.status_code}")
 
-@app.route('/get_upcoming_ipo')
-def get_upcoming_ipo():
-    try:
-        limit = request.args.get('limit', default=20, type=int)  # Retrieve limit parameter
-        formatted_data = fetch_data(1, limit=limit)  # type 1 for IPO
-        return json.dumps(formatted_data, indent=2)
-    except Exception as e:
-        return str(e)
-
-@app.route('/get_upcoming_right')
-def get_upcoming_right():
-    try:
-        limit = request.args.get('limit', default=20, type=int)
-        formatted_data = fetch_data(3, limit=limit)  # type 3 for Right
-        return json.dumps(formatted_data, indent=2)
-    except Exception as e:
-        return str(e)
-
-@app.route('/get_upcoming_fpo')
-def get_upcoming_fpo():
-    try:
-        limit = request.args.get('limit', default=20, type=int)
-        formatted_data = fetch_data(2, limit=limit)  # type 2 for fpo
-        return json.dumps(formatted_data, indent=2)
-    except Exception as e:
-        return str(e)
-
-@app.route('/get_upcoming_local')
-def get_upcoming_local():
-    try:
-        limit = request.args.get('limit', default=20, type=int)
-        formatted_data = fetch_data(5, limit=limit)  # type 5 for local
-        return json.dumps(formatted_data, indent=2)
-    except Exception as e:
-        return str(e)
-
-@app.route('/get_upcoming_debenture')
-def get_upcoming_debenture():
-    try:
-        limit = request.args.get('limit', default=20, type=int)
-        formatted_data = fetch_data(7, limit=limit)  # type 7 for debenture
-        return json.dumps(formatted_data, indent=2)
-    except Exception as e:
-        return str(e)
-
-@app.route('/get_upcoming_migrant')
-def get_upcoming_migrant():
-    try:
-        limit = request.args.get('limit', default=20, type=int)
-        formatted_data = fetch_data(8, limit=limit)  # type 8 for migrant
-        return json.dumps(formatted_data, indent=2)
-    except Exception as e:
-        return str(e)
-
-@app.route('/get_upcoming_all')
-def get_upcoming_all():
-    try:
-        # Retrieve 'limit' parameter from the request URL, default to 10 if not provided
-        limit = request.args.get('limit', default=10, type=int)
-
-        all_data = []
-        for type_value, issue_type in [(1, 'ipo'), (3, 'right'), (2, 'fpo'), (5, 'local'), (7, 'debenture'), (8, 'migrant')]:
-            data = fetch_data(type_value, limit=limit)
-            for item in data:
-                item['issueType'] = issue_type
-            all_data.extend(data)
-        return json.dumps(all_data, indent=2)
-    except Exception as e:
-        return str(e)
+# Define your Flask routes here as in your original code...
 
 if __name__ == '__main__':
     app.run(debug=True)
